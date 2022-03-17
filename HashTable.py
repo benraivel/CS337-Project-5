@@ -4,6 +4,7 @@
 import numpy as np
 import time
 import re
+import os
 
 
 class HashTable():
@@ -17,7 +18,12 @@ class HashTable():
         '''
         # initial size, must be power of 2
         self.size = 128
-        self.n_entries = 0
+
+        # number of unique words
+        self.n_unique = 0
+
+        # total number counted
+        self.n_total = 0
 
         # keys are 20 characters
         # according to a website 99.9% of english words are <20 char
@@ -29,11 +35,14 @@ class HashTable():
         # create empty table
         self.table = np.empty(self.size, dtype=self.val_key)
 
+        # set init time
+        self.init_time = time.time()
+
     def get(self, key):
         '''
         if key in table:
             returns (val, index) 
-        if not:
+        else:
             returns (None, index)
         '''
         # loop count variable
@@ -79,13 +88,16 @@ class HashTable():
         # if this entry is new
         if prev_val == None:
 
-            # increment n_entries
-            self.n_entries += 1
+            # new unique entry
+            self.n_unique += 1
 
             # if density exceedes 50%
-            if self.n_entries/self.size > 0.5:
+            if self.n_unique/self.size > 0.5:
 
                 self.grow_table()
+
+        # counted word
+        self.n_total += 1
 
     def increment(self, key, i=1):
         '''
@@ -108,12 +120,15 @@ class HashTable():
             # set key
             self.table[idx]['key'] = key
 
-            self.n_entries += 1
+            self.n_unique += 1
 
             # if density exceedes 50%
-            if self.n_entries/self.size > 0.5:
+            if self.n_unique/self.size > 0.5:
 
                 self.grow_table()
+
+        # counted word
+        self.n_total += 1
 
     def grow_table(self):
         '''
@@ -122,14 +137,16 @@ class HashTable():
         # copy old table
         old_table = self.table.copy()
 
-        print('size: ' + str(self.size) + '\tthe = ' + str(self.get('the')[0]))
-
         # double size
         self.size *= 2
 
+        runtime = time.time() - self.init_time
+
+        #print('pid: %d\tsize: %d\ttime: %.2f' % (os.getpid(), self.size, time.time() - self.init_time))
+        print('%d, %d, %d, %.4f' % (os.getpid(), self.size, self.n_total, runtime))
+
         # create new table
         self.table = np.empty(self.size, dtype=self.val_key)
-
 
         # loop over old table
         for i in range(old_table.size):
@@ -140,11 +157,32 @@ class HashTable():
                 # insert into new table
                 self.insert(old_table[i]['key'], old_table[i]['val'])
 
+    def combine(self, hashmap):
+        '''
+        absorbs hashmap into self.table
+        '''
+        # get non-zero entries of table
+        indices = np.nonzero(hashmap.table)[0]
+
+        # for each nonzero entry
+        for i in range(indices.size):
+
+            # get val, key pair
+            struct = hashmap.table[indices[i]]
+
+            # increment key by val
+            self.increment(struct['key'], struct['val'])
+        
+        runtime = time.time() - self.init_time
+
+        print('%d, %d, %d, %.4f' % (os.getpid(), self.size, self.n_total, runtime))
+
     def __aux_hash_1(self, str):
         '''
         1st auxilary hashing function
         '''
         hash = 0
+
         for i in range(len(str)):
             hash += ord(str[-(i+1)])*(128**i)
 
@@ -156,6 +194,7 @@ class HashTable():
         MUST generate an odd number
         '''
         hash = 0
+
         for i in range(len(str)):
             hash += ord(str[i])*(64**i)
 

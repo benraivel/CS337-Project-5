@@ -10,19 +10,22 @@ import re
 
 import HashTable as ht
 
+# regex definition of a word
+WRD = re.compile(r"[a-z][a-z']*")
 
 def count_words(filename, table):
+    '''
+    counts words in file into table
+    '''
 
     # open file
     file = open(filename, 'r')
 
-    # regex definition of a word
-    wrd = re.compile(r"[a-z][a-z']*")
-
     # loop over lines in file
     for line in file:
 
-        words = wrd.findall(line.lower())
+        # tokenize
+        words = WRD.findall(line.lower())
 
         if words != []:
 
@@ -81,6 +84,10 @@ def test_4():
 
     print(np.nonzero(arr)[0])
 
+    arr.sort()
+
+    print(arr)
+
 def test_5():
     file = open('rc/reddit_comments_2008.txt', 'r')
 
@@ -96,6 +103,7 @@ def test_5():
 
 def main():
 
+    # create hashtable
     table = ht.HashTable()
 
     start = time.time()
@@ -108,4 +116,4 @@ def main():
 
 
 if __name__ == '__main__':
-    test_4()
+    main()

@@ -1,5 +1,6 @@
 # Ben Raivel
 
+from imp import init_builtin
 import HashTable as ht
 import multiprocessing
 import re
@@ -7,13 +8,15 @@ import time
 
 WRD = re.compile(r"[a-z][a-z']*")
 
-def m_count_words(block):
+def m_count_words(data):
     '''
     generate and return hashtable for block of lines
     '''
+    block = data[0]
+    init_time = data[1]
 
     # create hashtable
-    table = ht.HashTable()
+    table = ht.HashTable(init_time)
 
     # loop over lines in block
     for line in block:
@@ -32,7 +35,7 @@ def m_count_words(block):
 
     return table
 
-def gen_block(file, n_lines = 100000):
+def gen_block(file, init_time, n_lines = 100000):
     '''
     generator that turns file into multi-line (block) iterator 
     '''
@@ -46,7 +49,7 @@ def gen_block(file, n_lines = 100000):
         if index % n_lines == 0:
 
             # yield the list of n lines
-            yield block
+            yield (block, init_time)
 
             # reset list to be empty
             block = []
@@ -55,7 +58,7 @@ def gen_block(file, n_lines = 100000):
         block.append(line)
 
     # yield the last list
-    yield block
+    yield (block, init_time)
 
 
 def main():

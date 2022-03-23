@@ -1,4 +1,4 @@
 /rc
 /__pycache__
 /*.csv
-.DS_Store
+/logs

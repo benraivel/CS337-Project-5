@@ -2,3 +2,5 @@
 /__pycache__
 /*.csv
 /logs
+/serial_logs
+/multi_logs

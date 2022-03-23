@@ -15,33 +15,32 @@ class HashTable():
     - keys are 20 char
     '''
 
-    def __init__(self, init_time = None):
+    def __init__(self, init_time = None, log_folder = 'log'):
         '''
         creates an empty hash table
         pass init_time for multithreaded performace tracking
         '''
-        # initial size, must be power of 2
+        # initial size, size must always be power of 2
         self.size = 128
 
-        # number of unique words
+        # number of unique words / total words
         self.n_unique = 0
-
-        # total number counted
         self.n_total = 0
 
-        # keys are 20 characters
-        self.key_nchar = 20
+        # folder to use for logging
+        self.log_folder = log_folder
 
-        # define (val, key) pair dtype
-        self.val_key = np.dtype([('val', np.uint), ('key', np.unicode_, self.key_nchar)])
+        # define (val, key) pair dtype keys are 20 characters
+        self.val_key = np.dtype([('val', np.uint), ('key', np.unicode_, 20)])
         
         # create empty table
         self.table = np.empty(self.size, dtype=self.val_key)
 
-        # set init time
+        # use provided init_time if possible
         if init_time != None:
             self.init_time = init_time
-        else:
+        
+        else: # set init time to current time
             self.init_time = time.time()
 
     def get(self, key):
@@ -208,7 +207,7 @@ class HashTable():
             table_size, n_unique, n_total, time
         '''
         # get path for log file based on pid
-        log_path = 'logs/' + str(os.getpid()) + '_log.csv'
+        log_path = self.log_folder + '/' + str(os.getpid()) + '_log.csv'
 
         # if file does not exist
         if not os.path.exists(log_path):

@@ -8,15 +8,14 @@ import time
 
 WRD = re.compile(r"[a-z][a-z']*")
 
-def m_count_words(data):
+def m_count_words(args):
     '''
     generate and return hashtable for block of lines
     '''
-    block = data[0]
-    init_time = data[1]
+    (block, init_time, log_folder) = args
 
     # create hashtable
-    table = ht.HashTable(init_time)
+    table = ht.HashTable(init_time, log_folder)
 
     # loop over lines in block
     for line in block:
@@ -35,9 +34,11 @@ def m_count_words(data):
 
     return table
 
-def gen_block(file, init_time, n_lines = 100000):
+def gen_block(file, init_time, log_folder, n_lines = 100000):
     '''
-    generator that turns file into multi-line (block) iterator 
+    generator that turns file into multi-line (block) iterator
+    in order to use imap, this function needs to return a tuple of arguments:
+    (block_iterator, init_time, log_folder)
     '''
     # list to hold lines
     block = []
@@ -49,7 +50,7 @@ def gen_block(file, init_time, n_lines = 100000):
         if index % n_lines == 0:
 
             # yield the list of n lines
-            yield (block, init_time)
+            yield (block, init_time, log_folder)
 
             # reset list to be empty
             block = []
@@ -58,7 +59,7 @@ def gen_block(file, init_time, n_lines = 100000):
         block.append(line)
 
     # yield the last list
-    yield (block, init_time)
+    yield (block, init_time, log_folder)
 
 
 def main():

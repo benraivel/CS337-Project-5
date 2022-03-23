@@ -13,7 +13,7 @@ import HashTable as ht
 # regex definition of a word
 WRD = re.compile(r"[a-z][a-z']*")
 
-def count_words(filename, table):
+def s_count_words(filename, table):
     '''
     counts words in file into table
     '''
@@ -34,7 +34,7 @@ def count_words(filename, table):
 
                 # increment
                 table.increment(word)
-    
+
 
 
 def test_1(a, b):
@@ -103,6 +103,10 @@ def test_5():
 
 def main():
 
+    files = ['rc/reddit_comments_2008.txt', 'rc/reddit_comments_2009.txt', 'rc/reddit_comments_2010.txt', 
+                'rc/reddit_comments_2011.txt', 'rc/reddit_comments_2012.txt', 'rc/reddit_comments_2013.txt',
+                'rc/reddit_comments_2014.txt', 'rc/reddit_comments_2015.txt']
+
     # create hashtable
     table = ht.HashTable()
 
@@ -112,7 +116,7 @@ def main():
 
     end = time.time()
 
-    print(table.get('the'), str(end-start))
+    print(table.n_total, str(end-start))
 
 
 if __name__ == '__main__':

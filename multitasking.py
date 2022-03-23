@@ -5,10 +5,9 @@ import multiprocessing
 import re
 import time
 
-
 WRD = re.compile(r"[a-z][a-z']*")
 
-def count(block):
+def m_count_words(block):
     '''
     generate and return hashtable for block of lines
     '''
@@ -74,16 +73,16 @@ def main():
     pool = multiprocessing.Pool()
 
     # non-blocking map of count function to block iterator
-    sub_tables = pool.imap(count, blocks)
+    sub_tables = pool.imap(m_count_words, blocks)
 
     # for each table returned by pool
     for t in sub_tables:
-        
+
         # combine with the main table
         table.combine(t)
-        
+
     #print(table.get('the'))
-    
+
 
 if __name__ == '__main__':
 
@@ -92,6 +91,3 @@ if __name__ == '__main__':
     end = time.time()
 
     print(end-start)
-
-
-    

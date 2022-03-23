@@ -1,11 +1,10 @@
 # Ben Raivel
 
-
 import numpy as np
+import pandas as pd
 import time
 import re
 import os
-
 
 class HashTable():
     '''
@@ -128,7 +127,7 @@ class HashTable():
                 self.grow_table()
 
         # counted word
-        self.n_total += 1
+        self.n_total += i
 
     def grow_table(self):
         '''
@@ -140,6 +139,7 @@ class HashTable():
         # double size
         self.size *= 2
 
+        # calculate run time
         runtime = time.time() - self.init_time
 
         #print('pid: %d\tsize: %d\ttime: %.2f' % (os.getpid(), self.size, time.time() - self.init_time))
@@ -172,10 +172,32 @@ class HashTable():
 
             # increment key by val
             self.increment(struct['key'], struct['val'])
-        
+
         runtime = time.time() - self.init_time
 
         print('%d, %d, %d, %.4f' % (os.getpid(), self.size, self.n_total, runtime))
+
+    def to_df(self):
+        '''
+        returns a pandas dataframe copy of the table with empty values dropped 
+        and additional columns for year and frequency
+        '''
+
+        # create df from table
+        df = pd.DataFrame.from_records(self.table)
+
+        # replace empty string with None
+        df = df[df.val != 0]
+
+        # add cols: year is constant, freq in count/total
+        df = df.assign(freq = lambda x: x['val']/self.n_total)
+
+        # sort
+        df = df.sort_values('val', ascending = False)
+
+        return df
+
+
 
     def __aux_hash_1(self, str):
         '''
